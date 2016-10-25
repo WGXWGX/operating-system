@@ -126,7 +126,85 @@
 		oCall.onclick = function(){
 			callProcess();
 		}
-
+		function creatPCB(){
+			begin = window.prompt("请输入内存起始begin: ");
+			size = window.prompt("请输入内存长度size: ");
+			arr.length = size;
+			console.log(arr.length);
+			begin = parseInt(begin);
+			size = parseInt(size);
+			alert('内存创建成功');
+			showAgain();
+		}
+		function createProcess(){
+			var inSize = window.prompt("请输入此进程的长度size: ");
+			inSize = parseInt(inSize);
+			if(inSize !== 0 && inSize !== '' && inSize > 0){
+				if(size - inSize >= 0){
+					
+					if(running.length === 0 && block.length === 0 && ready.length === 0){
+						flag = 1;
+					}
+					var temp = new Object();
+					temp.name = 'process' + flag + "<" + begin + ","+ inSize + ">";
+					temp.size = inSize;
+					size = size - inSize;
+					begin = begin + inSize;
+					
+					
+					// console.log(inSize);
+					// var temp = //对象试试
+					ready.push(temp.name);
+					if(running.length === 0){
+						var temp1 = ready.shift();
+						running.push(temp1);
+					}
+					flag++;
+					alert('进程创建成功');
+					showProcess();
+				}else{
+					alert('sorry,内存不足，创建失败');
+				}
+			}else{
+				alert('sorry,内存长度不能为0或空或负数');
+			}
+		}
+		function showAgain(){
+			var oDiv = document.createElement('div');
+			oDiv.style.width = '240px';
+			oDiv.style.height = '50px';
+			oDiv.style.borderBottom = '1px solid red';
+			oDiv.style.paddingLeft = '8px';
+			oDiv.style.fontSize = '16px';
+			oDiv.style.fontWeight = 'bold';
+			oDiv.style.marginTop = '5px';
+			showMemory.appendChild(oDiv);
+			oDiv.innerHTML = "剩余的内存的起始位置为 : " + begin + "<br>" + "剩余的内存为 : " + size;
+		}
+		function showProcess(){
+			var oDiv = document.createElement('div');
+			oDiv.style.width = '490px';
+			oDiv.style.height = '80px';
+			oDiv.style.borderBottom = '1px solid red';
+			oDiv.style.paddingLeft = '8px';
+			oDiv.style.fontSize = '16px';
+			oDiv.style.fontWeight = 'bold';
+			show.appendChild(oDiv);
+			oDiv.innerHTML = " ready : " + ready + "<br>" + " running : " + running + "<br>" + " block : " + block + "<br>";
+		}
+		function blockProcess(){
+			if(running.length !== 0){
+				var process = running.shift();
+				block.push(process);
+				if(ready.length !== 0){
+					var process1 = ready.shift();
+					running.push(process1);
+				}
+				showProcess();
+			}else{
+				alert('sorry,进程空');
+			}
+		}
 		
 	</script>
 </body>
