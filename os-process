@@ -206,6 +206,70 @@
 			}
 		}
 		
+		function timeOverProcess(){
+			if(running.length !== 0){
+				var process = running.shift();
+				ready.push(process);
+				if(ready.length !== 0){
+					var process1 = ready.shift();
+					running.push(process1);
+				}
+				showProcess();
+			}else{
+				alert('sorry,无进程');
+			}
+		}
+		function wakeProcess(){
+			if(block.length !== 0){
+				var process = block.shift();
+				ready.push(process);
+				if(running.length === 0){
+					var process1 = ready.shift();
+					running.push(process1);
+				}
+				showProcess();
+			}else{
+				alert('sorry,无进程');
+			}
+		} 
+		function checkMemory(){
+			if(size >= 0){
+				showAgain();	
+			}else{
+				alert('sorry,内存无');
+			}
+			
+		}
+		function stopProcess(){
+			if(running.length !== 0){
+				running.shift();
+				if(ready.length !== 0){
+					var process = ready.shift();
+					running.push(process);
+				}
+				showProcess();
+				console.log(running);
+			}else{
+				alert('sorry,无进程');
+			}
+		}
+		function callProcess(){
+			if(running.length !== 0){
+				var process = running.shift();
+				ready.push(process);
+				if(ready.length !== 0){
+					var process1 = ready.shift();
+					running.push(process1);
+				}
+				showProcess();
+			}else{
+				alert('sorry,无进程');
+			}
+		}
+		function config(){
+			show.innerHTML = "";
+		}
+		config();		
 	</script>
 </body>
 </html>
