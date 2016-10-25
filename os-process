@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Process scheduling</title>
+	<style>
+		*{
+			padding: 0;
+			margin: 0;
+		}
+		.wrapper{
+			width: 700px;
+			height: 600px;
+			position: absolute;
+			border: 1px solid #333;
+			left: 50%;
+			margin-left: -350px;
+			top: 10px;
+		}
+		.show{
+			width: 500px;
+			height: 600px;
+			overflow: auto;
+		}
+		.button{
+			width: 200px;
+			height: 600px;
+			position: absolute;
+			left: 500px;
+			border-left: 1px solid #ccc;
+			top: 0;
+		}
+		.button button{
+			width: 150px;
+			height: 40px;
+			margin-top: 20px;
+			margin-left: 25px;
+			background: #333;
+			color: #fff;
+		}
+		.showMemory{
+			position: fixed;
+			left: 10px;
+			top: 100px;
+			width: 250px;
+			height: 500px;
+			border: #333 1px solid;
+		}
+		#creatPCB{
+			width: 150px;
+			height: 40px;
+			background: #333;
+			color: #fff;
+			position: fixed;
+			top: 30px;
+			left: 50px;
+		}
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<div class="show"></div>
+		<div class="button">
+			<button id="create">创建进程</button>
+			<button id="stop">终止进程</button>
+			<button id="timeover">时间片到</button>
+			<button id="block">阻塞进程</button>
+			<button id="wake">唤醒进程</button>
+			<button id="checkmemory">查看内存</button>
+			<button id="call">调度进程</button>
+			<button id="clear">clear</button>
+			<button id="exit">退出</button>
+		</div>
+	</div>
+		<button id="creatPCB">创建内存</button>
+		<div class="showMemory"></div>
+	<script>
+		var show = document.getElementsByClassName('show')[0];
+		var showMemory = document.getElementsByClassName('showMemory')[0];
+		var ready = [];
+		var block = [];
+		var running = [];
+		var flag = 1;
+		var oCreatPCB = document.getElementById('creatPCB'); 
+		var oCreate = document.getElementById('create');//
+		var oStop = document.getElementById('stop');//
+		var oTimeover = document.getElementById('timeover');//
+		var oBlock = document.getElementById('block');//
+		var oWake = document.getElementById('wake');//
+		var oCheckmemory = document.getElementById('checkmemory');
+		var oCall = document.getElementById('call');//
+		var oClear = document.getElementById('clear');//
+		var oExit = document.getElementById('exit');//
+		var begin;
+		var size;
+		var arr = new Array();
+		oCreatPCB.onclick = function(){
+			creatPCB();
+		}
+		oCreate.onclick = function(){
+			createProcess();
+		}
+		oStop.onclick = function(){
+			stopProcess();
+		}
+		oTimeover.onclick = function(){
+			timeOverProcess();
+		}
+		oBlock.onclick = function(){
+			blockProcess();
+		}
+		oWake.onclick = function(){
+			wakeProcess();
+		}
+		oCheckmemory.onclick = function(){
+			checkMemory();
+		}
+		oClear.onclick = function(){
+			// alert('123');
+			location.reload();
+		}
+		oExit.onclick = function(){
+			window.close();
+			// alert('123');
+		}
+		oCall.onclick = function(){
+			callProcess();
+		}
+
+		
+	</script>
+</body>
+</html>
