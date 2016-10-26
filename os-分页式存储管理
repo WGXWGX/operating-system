@@ -1,0 +1,243 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
+#include <time.h>
+typedef struct Table 
+{
+	int yh;
+	int kh;
+	int yw;
+	struct Table*next;
+}NTABLE,*TABLE;//页表
+typedef struct Stick 
+{
+	int syh;
+	struct Stick*next;
+}NSTICK,*STICK;//块表
+void add_table_list(TABLE phead,int a);
+void traverse_table_list(TABLE phead);
+void traver_stick_list(STICK phead);
+void weishitu(int a[8][8],int b);
+int weishitufanhui(int a[8][8],int b);
+void add_stick_list(STICK phead,int a);
+void FIFO(TABLE phead,STICK phead1,int a);
+void LRU(TABLE phead,STICK phead1,int a);
+void change_stick(STICK phead1,int a);
+int main(void)
+{
+	int a,b,d,e,f,g=0,h=0,k;
+	int yehao,ydizhi,mzhong=0;
+	int c[8][8];
+	TABLE phead=(TABLE)malloc(sizeof(NTABLE));
+	
+	STICK phead1=(STICK)malloc(sizeof(NSTICK));
+	
+	printf("请输入页表长度：");
+	scanf("%d",&a);
+	add_table_list(phead,a);
+	printf("请输入块的个数：");
+	scanf("%d",&b);
+	add_stick_list(phead1,b);
+	printf("请输入块大小：");
+	scanf("%d",&d);
+	weishitu(c,b);
+	printf("---------------请选择置换算法--------------\n");
+	printf("1.FIFO置换算法\n");
+	printf("2.LRU置换算法\n");
+
+	scanf("%d",&e);
+	
+	STICK q=phead1->next;
+	switch(e)
+	{
+		case 1:
+			while (1)
+			{
+			
+				printf("请输入地址大小10进制：");
+				scanf("%d",&f);
+				yehao=f/(d*1024);
+				ydizhi=f%(d*1024);
+				printf("页内地址为%d\n",ydizhi);
+				if (yehao>a)
+				{
+					printf("输入的地址大于页表长度,请重新输入地址");
+					continue;
+				}
+				TABLE p=phead->next;
+					while (p!=NULL)
+					{
+						if(g<b)
+						{
+							if (yehao==p->yh&&p->yw==0)
+							{
+								p->kh=weishitufanhui(c,1);
+								p->yw=1;
+								while (q!=NULL)
+								{
+									if (q->syh==-1)
+									{
+										q->syh=yehao;
+										g++;
+										traverse_table_list(phead);
+										traver_stick_list(phead1);
+										h=1;
+										
+										printf("缺页次数%d    ",g);
+										printf("命中次数%d    ",mzhong);
+										k=p->kh*1024*d+ydizhi;
+										printf("物理地址为%d\n",k);
+										break;
+									}
+									q=q->next;
+								}
+								break;
+							}
+							else if (yehao==p->yh&&p->yw==1)
+							{
+								traverse_table_list(phead);
+								traver_stick_list(phead1);
+								h=1;
+								mzhong++;
+								printf("缺页次数%d    ",g);
+								printf("命中次数%d\n",mzhong);
+								k=p->kh*1024*d+ydizhi;
+								printf("物理地址为%d\n",k);
+								break;
+							}
+						}
+						if (yehao==p->yh&&p->yw==1&&h==0)
+						{
+							traverse_table_list(phead);
+							traver_stick_list(phead1);
+							mzhong++;
+							printf("缺页次数%d    ",g);
+							printf("命中次数%d\n",mzhong);
+							k=p->kh*1024*d+ydizhi;
+							printf("物理地址为%d\n",k);
+							break;
+						}
+						else if(yehao==p->yh&&p->yw==0&&h==0)
+						{
+							g++;
+							FIFO(phead,phead1,yehao);
+							traverse_table_list(phead);
+							traver_stick_list(phead1);
+							printf("缺页次数%d    ",g);
+							printf("命中次数%d\n",mzhong);
+							k=p->kh*1024*d+ydizhi;
+							printf("物理地址为%d\n",k);
+							break;
+						}
+						p=p->next;
+						h=0;
+					}
+			}
+			break;
+		case 2:
+			while (1)
+			{
+				printf("请输入地址大小10进制：");
+				scanf("%d",&f);
+				yehao=f/(d*1024);
+				ydizhi=f%(d*1024);
+				if (yehao>a)
+				{
+					printf("输入的地址大于也表长度,请重新输入地址");
+					continue;
+				}
+				TABLE p=phead->next;
+				while (p!=NULL)
+				{
+					if(g<b)
+					{
+						if (yehao==p->yh&&p->yw==0)
+						{
+							p->kh=weishitufanhui(c,1);
+							p->yw=1;
+							while (q!=NULL)
+							{
+								if (q->syh==-1)
+								{
+									q->syh=yehao;
+									g++;
+									traverse_table_list(phead);
+									traver_stick_list(phead1);
+									h=1;
+									printf("缺页次数%d    ",g);
+									printf("命中次数%d\n",mzhong);
+									k=p->kh*1024*d+ydizhi;
+									printf("物理地址为%d\n",k);
+									break;
+								}
+								q=q->next;
+							}
+							break;
+						}
+						else if (yehao==p->yh&&p->yw==1)
+						{
+							traverse_table_list(phead);
+							traver_stick_list(phead1);
+							h=1;
+							mzhong++;
+							printf("缺页次数%d    ",g);
+							printf("命中次数%d\n",mzhong);
+							k=p->kh*1024*d+ydizhi;
+							printf("物理地址为%d\n",k);
+							break;
+						}
+					}
+					if (yehao==p->yh&&p->yw==1&&h==0)
+					{
+						change_stick(phead1,yehao);
+						traverse_table_list(phead);
+						traver_stick_list(phead1);
+						mzhong++;
+						printf("缺页次数%d    ",g);
+						printf("命中次数%d\n",mzhong);
+						k=p->kh*1024*d+ydizhi;
+						printf("物理地址为%d\n",k);
+						break;
+					}
+					else if(yehao==p->yh&&p->yw==0&&h==0)
+					{
+						g++;
+						FIFO(phead,phead1,yehao);
+						traverse_table_list(phead);
+						traver_stick_list(phead1);
+						printf("缺页次数%d    ",g);
+						printf("命中次数%d\n",mzhong);
+						k=p->kh*1024*d+ydizhi;
+						printf("物理地址为%d\n",k);
+						break;
+					}
+					p=p->next;
+					h=0;
+				}
+			}
+			break;
+	}
+	system("pause");
+	return 0;
+}
+void add_table_list(TABLE phead,int a)
+{
+	int i =0;
+	TABLE taile = phead;
+	if(phead==NULL)
+	{
+		printf("动态内存分配失败");
+		exit(-1);
+	}
+	for (i=0;i<a;i++)
+	{
+		TABLE new_table =(TABLE)malloc(sizeof(NTABLE));
+		taile->next = new_table;
+		new_table->yh = i;
+		new_table->kh = -1;
+		new_table->yw = 0;
+		taile = new_table;
+		taile->next=NULL;
+	}
+	return;
+}
