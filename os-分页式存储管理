@@ -328,3 +328,41 @@ int weishitufanhui(int a[8][8],int b)
 		}
 	}
 }
+void LRU(TABLE phead,STICK phead1,int a)
+{
+
+}
+void FIFO(TABLE phead,STICK phead1,int a)
+{
+	STICK l=phead1->next;
+	TABLE p=phead->next;
+	TABLE q=phead->next;
+	int b;
+	b=l->syh;
+	while (p!=NULL)
+	{
+		if (p->yh==b)
+		{
+			break;
+		}
+		p=p->next;
+	}
+	while (q!=NULL)
+	{
+		if (q->yh==a)
+		{
+			break;
+		}
+		q=q->next;
+	}
+	q->kh=p->kh;
+	p->kh=-1;
+	q->yw=1;
+	p->yw=0;
+	while (l->next!=NULL)
+	{
+		l->syh=l->next->syh;
+		l=l->next;
+	}
+	l->syh=a;
+}
