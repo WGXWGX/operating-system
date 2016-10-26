@@ -366,3 +366,35 @@ void FIFO(TABLE phead,STICK phead1,int a)
 	}
 	l->syh=a;
 }
+void change_stick(STICK phead1,int a)
+{
+	int b;
+	STICK p = phead1->next;
+	STICK q = phead1->next;
+	while (p!=NULL)
+	{
+		if (p->syh==a)
+		{
+			break;
+		}
+		p=p->next;
+	}
+	while (q!=NULL)
+	{
+		if (q->syh==a)
+		{
+			break;
+		}
+		q=q->next;
+	}
+	if (p->next!=NULL)
+	{
+		while (q->next!=NULL)
+		{
+			q->syh=q->next->syh;
+			q=q->next;
+		}
+		q->syh=a;
+	}
+
+}                                               
