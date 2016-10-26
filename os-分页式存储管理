@@ -241,3 +241,90 @@ void add_table_list(TABLE phead,int a)
 	}
 	return;
 }
+void traverse_table_list(TABLE phead)
+{
+	TABLE p = phead->next;
+	printf("页号      块号      状态位\n");
+	while (p!=NULL)
+	{
+		printf("%d          ",p->yh);
+		printf("%d          ",p->kh);
+		printf("%d          \n",p->yw);
+		p=p->next;
+	}
+}
+void add_stick_list(STICK phead,int a)
+{
+	int i =0;
+	STICK taile = phead;
+	if(phead==NULL)
+	{
+		printf("动态内存分配失败");
+		exit(-1);
+	}
+	for (i=0;i<a;i++)
+	{
+		STICK new_stick =(STICK)malloc(sizeof(NSTICK));
+		taile->next = new_stick;
+		new_stick->syh=-1;
+		taile = new_stick;
+		taile->next=NULL;
+	}
+}
+void traver_stick_list(STICK phead)
+{
+	STICK p=phead->next;
+	while (p!=NULL)
+	{
+		printf("%d  ",p->syh);
+		p=p->next;
+	}
+	printf("\n");
+}
+void weishitu(int a[8][8],int b)
+{
+	int i,j,z,x=0;
+	srand((int)time(NULL));
+	for (i=0;i<8;i++)
+	{
+		for (j=0;j<8;j++)
+		{
+			//srand((int)time(NULL));
+			a[i][j]=rand()%2;
+			printf("%d",(a[i][j]));
+		}
+		if(j==8)
+			printf("\n");
+	}
+	for (i=0;i<8;i++)
+	{
+		for (j=0;j<8;j++)
+		{
+			if (a[i][j]==0&&x<b)
+			{
+				z=i*8+j+1;
+				printf("第%d块,",z);
+				x++;
+			}
+		}
+	}
+	printf("可用\n");
+}
+int weishitufanhui(int a[8][8],int b)
+{
+	int i,j,z,x=0;
+	for (i=0;i<8;i++)
+	{
+		for (j=0;j<8;j++)
+		{
+			if (a[i][j]==0&&x<b)
+			{
+				z=i*8+j+1;
+				printf("第%d块\n",z);
+				x++;
+				a[i][j]=1;
+				return z;
+			}
+		}
+	}
+}
