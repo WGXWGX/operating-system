@@ -354,3 +354,68 @@ void release_controller(struct Node *node,struct PCB *p)
 		}
 	}
 }
+
+
+void release()
+{
+	char name[10];
+	struct Node *node;
+	struct PCB *p;
+	printf("设备名:");//divice name
+	scanf("%s",name);
+	node=findByName(name,DCTs);
+	if(node==NULL || node->process==NULL)
+	{
+		return;
+	}
+	p=node->process;
+	node->process=NULL;
+	allocate_device(node,removeFirst(node->waiting));
+	release_controller(node->parent,p);
+}
+void display_process_status(struct Node *node)
+{
+	struct PCB *p=node->waiting->next;
+	if(node->process!=NULL)
+		printf("<--%s",node->process->name);
+    while(p!=NULL)
+	{
+		printf("<--%s",p->name);
+		p=p->next;
+	}
+	printf("\n");
+
+}
+void display_status()
+{
+	struct Node *chct=CHCTs->next,*coct,*dct;
+	while(chct!=NULL)
+	{
+		printf("%s",chct->name);
+		display_process_status(chct);
+		coct=COCTs->next;
+		while(coct!=NULL)
+		{
+			if(coct->parent==chct)
+			{
+				printf("\t%s",coct->name);
+				display_process_status(coct);
+				dct=DCTs->next;
+				while(dct!=NULL)
+				{
+					if(dct->parent==coct)
+					{
+					printf("\t\t%s",dct->name);
+					display_process_status(dct);
+
+					}
+					dct=dct->next;
+				}
+			}
+			coct=coct->next;
+		}
+		chct=chct->next;
+	}
+
+}
+/
