@@ -123,3 +123,234 @@ void block(struct PCB *head,struct PCB *p)
 		}
 	}
 }
+//设备管理
+int get_child_count(struct Node *node,struct Node *childs_head)
+{
+	int count=0;
+	struct Node *tmp=childs_head->next;
+	while(tmp!=NULL)
+	{
+		if(tmp->parent==node)
+			count++;
+		tmp=tmp->next;
+	}
+	return count;
+}
+struct Node *findByName(char *name,struct Node *head)
+{
+	struct Node *tmp=head->next;
+	while(tmp!=NULL)
+	{
+		if(strcmp(tmp->name,name)==0)
+			return tmp;
+		tmp=tmp->next;
+	}
+	printf("%cERROR:不能找到 %s!\n ",name);
+	return NULL;
+}
+struct  Node *addNode(char *name,struct Node *parent,struct Node *head)
+{
+	struct Node *tmp=head;
+	while(tmp->next!=NULL)
+	{
+		tmp=tmp->next;
+	}
+	tmp->next=(struct Node *)malloc(sizeof(struct Node));
+	strcpy(tmp->next->name,name);
+	tmp->next->next=NULL;
+	tmp->next->parent=parent;
+	tmp->next->process=NULL;
+	tmp->next->waiting=(struct PCB *)malloc(sizeof(struct PCB));
+	tmp->next->waiting->next=NULL;
+	return tmp->next;
+}
+void removeNode(char *name,struct Node *head)
+{
+	struct Node *tmp1=head;
+	struct Node *tmp2=head->next;
+	while(tmp2!=NULL)
+	{
+		if(strcmp(tmp2->name,name)==0)
+		{
+			if(tmp2->process==NULL && tmp2->waiting->next==NULL)
+			{
+				tmp1->next=tmp2->next;
+				free(tmp2);
+			}
+			else
+			printf("%cERROR:不能删除%s ",name);
+          	return;
+		}
+		tmp1=tmp2;
+		tmp2=tmp2->next;
+	}
+	printf("%cERROR:不能找到 %s ",name);
+}
+
+void add_devices()
+{
+	int i;
+	char name[10],parent[10];
+	while(1)
+	{
+		printf("1.添加设备\n");
+		printf("2.添加控制器\n");
+		printf("3.添加通道\n");
+		printf("0.返回\n");
+		scanf("%d",&i);
+		if(i!=0)
+		{
+			printf("name:");
+			scanf("%s",name);
+		}
+		if(i==1||i==2)
+		{
+			printf("parent name:");
+			scanf("%s",parent);
+		}
+		switch(i)
+		{
+		case 1:
+			addNode(name,findByName(parent,COCTs),DCTs);
+			break;
+		case 2:
+			addNode(name,findByName(parent,CHCTs),COCTs);
+			break;
+		case 3:
+			addNode(name,NULL,CHCTs);
+			break;
+		case 0:
+			return;
+		}
+	}
+}
+void remove_devices()//删除
+{
+	int i;
+	char name[10];
+	struct Node *tmp;
+	while(1)
+	{
+		printf("1.删除设备\n");
+		printf("2.删除控制器\n");//controller
+		printf("3.删除通道\n");// channel
+		printf("0.返回\n");
+		scanf("%d",&i);
+		if(i!=0)
+		{
+			printf("name:");
+			scanf("%s",name);
+		}
+
+		switch(i)
+		{
+		case 1:
+			removeNode(name,DCTs);
+			break;
+		case 2:
+			tmp=findByName(name,COCTs);
+			if(tmp==NULL)
+	    	printf("%cERROR:不能找到 %s ",name);
+			else if(get_child_count(tmp,DCTs)>0)	
+	             printf("%cERROR:不能删除 %s ",name);
+			else
+				removeNode(name,COCTs);
+			break;
+		case 3:
+		    tmp=findByName(name,COCTs);
+			if(tmp==NULL)
+	    	printf("%cERROR:不能找到 %s ",name);
+			else if(get_child_count(tmp,COCTs)>0)
+	             printf("%cERROR:不能删除 %s ",name);
+			else
+				removeNode(name,CHCTs);
+			break;
+		case 0:
+			return;
+		}
+	}
+
+}
+void  allocate_channel(struct Node *node,struct PCB *p)
+{
+	if(p==NULL)
+	return;
+	if(node->process==NULL)
+	{
+		node->process=p;
+		block(blocked,p);
+
+	}
+	else block(node->waiting,p);
+}
+void  allocate_controller(struct Node *node,struct PCB *p)
+{
+	if(p==NULL)
+		return;
+	if(node->process==NULL)
+	{
+		node->process=p;
+		allocate_channel(node->parent,p);
+
+	}
+	else block(node->waiting,p);
+}
+void  allocate_device(struct Node *node,struct PCB *p)
+{
+	if(p==NULL)
+		return;
+	if(node->process==NULL)
+	{
+		node->process=p;
+		allocate_controller(node->parent,p);
+
+	}
+	else block(node->waiting,p);
+}
+void allcoate()//分配设备
+{
+	char name[10];
+	struct Node *node;
+	if(running==NULL)
+		return;
+	printf("设备名:");
+	scanf("%s",name);
+	node=findByName(name,DCTs);
+	if(node==NULL)
+	{
+		return;
+	}
+	allocate_device(node,running);
+}
+void release_channel(struct Node *node,struct PCB *p)
+{
+	if(node->process==p){
+		node->process=NULL;
+		allocate_channel(node,removeFirst(node->waiting));
+		add(ready,remove_process(blocked,p));
+			if(running==NULL){
+			running=removeFirst(ready);
+		}
+	}
+	else{
+		add(ready,remove_process(node->waiting,p));
+		if(running==NULL){
+			running=removeFirst(ready);
+		}
+	}
+}
+
+void release_controller(struct Node *node,struct PCB *p)
+{
+	if(node->process==p){
+		node->process=NULL;
+		allocate_controller(node,removeFirst(node->waiting));
+		release_channel(node->parent,p);
+	}
+	else{
+		add(ready,remove_process(node->waiting,p));
+		if(running==NULL){
+			running=removeFirst(ready);
+		}
+	}
+}
