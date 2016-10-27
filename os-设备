@@ -418,4 +418,90 @@ void display_status()
 	}
 
 }
-/
+/菜单
+void menu()
+{
+		printf("---------------欢迎使用设备管理系统-----------\n");
+	printf("9:添加设备\n");
+	printf("10:删除设备\n");
+	printf("11:申请设备\n");
+	printf("12:释放设备\n");
+	printf("13:显示设备\n");
+	printf("0:退出\n");
+
+}
+
+void init()//初始化
+{
+	struct Node *chct,*coct;
+	ready=(struct PCB *)malloc(sizeof(struct PCB));
+	ready->next=NULL;
+	blocked=(struct PCB *)malloc(sizeof(struct PCB));
+	blocked->next=NULL;
+
+	create_process("A",5000);
+    create_process("B",5000);
+    create_process("C",5000);
+    create_process("D",5000);
+    create_process("E",5000);
+	create_process("F",5000);
+	create_process("G",5000);
+	create_process("H",5000);
+	create_process("I",5000);
+	create_process("J",5000);
+
+
+	DCTs=(struct Node *)malloc(sizeof(struct Node));
+	DCTs->next=NULL;      
+	COCTs=(struct Node *)malloc(sizeof(struct Node));
+	COCTs->next=NULL;
+	CHCTs=(struct Node *)malloc(sizeof(struct Node));
+	CHCTs->next=NULL;
+	chct=addNode("CHCT1",NULL,CHCTs);
+	coct=addNode("COCT1",chct,COCTs);
+	addNode("K",coct,DCTs);
+	addNode("M",coct,DCTs);
+	chct=addNode("CHCT2",NULL,CHCTs);
+	coct=addNode("COCT2",chct,COCTs);
+	addNode("P",coct,DCTs);
+	chct=addNode("CHCT3",NULL,CHCTs);
+	coct=addNode("COCT3",chct,COCTs);
+	addNode("D",coct,DCTs);
+}
+
+main()
+{
+	int i;
+	init();
+	while(1){
+		menu();
+		//printf("0:退出,-1:显示菜单:");
+		scanf("%d",&i);
+		switch(i){
+		//case -1:
+		
+		//	break;
+		case 9:
+			add_devices();
+			break;
+		case 10:
+			remove_devices();
+			break;
+		case 11:
+			allcoate();
+			break;
+		case 12:
+			release();
+			break;
+		case 13:
+			display_status();
+			break;
+		case 14:
+			display();
+			break;
+		case 0:
+			exit(0);
+			break;
+		}
+	}
+}
