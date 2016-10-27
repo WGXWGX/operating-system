@@ -1,0 +1,125 @@
+#include"stdio.h"
+#include"stdlib.h"
+#include"string.h"
+#include"time.h"
+#include"math.h"
+struct Node
+{
+	char name[10];
+	struct PCB *process,*waiting;//占用的进程 等待就绪的头结点
+	struct Node *next;//节点的队列
+	struct Node *parent;//父节点
+
+};
+struct PCB
+{
+	char name[10];
+	int size;
+	struct PCB *next;
+};
+void add(struct PCB *head,struct PCB *process)
+{
+	struct PCB*tmp=head;
+	while(tmp->next!=NULL)
+		tmp=tmp->next;
+	tmp->next=process;
+	process->next=NULL;
+}
+
+struct PCB *removeFirst(struct PCB*head)
+{
+	struct PCB *tmp=head->next;
+	if(tmp!=NULL){
+		head->next=tmp->next;
+		tmp->next=NULL;
+	}
+	return tmp;
+}
+struct PCB *remove_process(struct PCB *head,struct PCB *p)
+{
+	struct PCB *tmp1=head;
+	struct PCB *tmp2=head->next;
+	while(tmp2!=NULL)
+	{
+		if(tmp2==p)
+		{
+			tmp1->next=tmp2->next;
+			tmp2->next=NULL;
+			return tmp2;
+		}
+		tmp1=tmp2;
+		tmp2=tmp2->next;
+	}
+	return NULL;
+}
+struct PCB *ready,*blocked,*running;
+struct Node *DCTs,*COCTs,*CHCTs;//设备 控制器 通道
+void create_process(char *name,int size)
+{
+	struct PCB*tmp;
+	tmp=(struct PCB*)malloc(sizeof(struct PCB));
+	strcpy(tmp->name,name);
+	tmp->size=size;
+	tmp->next=NULL;
+	add(ready,tmp);
+	if(running==NULL)
+		running=removeFirst(ready);
+
+}
+
+void display_blocked(struct PCB *head)
+{
+	struct PCB *tmp=head->next;
+	while(tmp!=NULL)
+	{
+		printf("%s",tmp->name);
+		tmp=tmp->next;	
+	}
+}
+void display_waiting(struct Node *head)
+{
+	struct Node *tmp=head->next;
+	while(tmp!=NULL)
+	{
+		display_blocked(tmp->waiting);//waitimg=head
+		tmp=tmp->next;
+	}
+}
+void display()
+{
+	struct PCB*tmp;    //遍历
+	printf("running:");
+	if(running!=NULL)
+		printf("%s",running->name);
+	printf("\n");
+	printf("ready:");
+	tmp=ready->next;
+	while(tmp!=NULL){
+		printf("%s ",tmp->name);
+		tmp=tmp->next;
+	}
+	printf("\nblocked:");
+	display_blocked(blocked);
+	display_waiting(CHCTs);
+	display_waiting(COCTs);
+	display_waiting(DCTs);
+	printf("\n");
+}
+
+void timeout()
+{
+	if(running!=NULL){
+		add(ready,running);
+		running=removeFirst(ready);
+	}
+}
+void block(struct PCB *head,struct PCB *p)
+{
+	if(p!=NULL){
+		add(head,p);
+		if(p==running)
+		{
+		running=removeFirst(ready);
+		}
+	}
+}
