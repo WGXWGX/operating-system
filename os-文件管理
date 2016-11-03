@@ -148,4 +148,160 @@ void rd()       /*  删除文件夹   */
                 }
         cout<<"该文件夹不存在"<<endl;
 }
+void fat()
+{
+        int             i,j,k;
+        for(i = 2 ; i < Dir[path-1].num ; i ++)
+        {
+                if(Dir[path-1].judge[i])
+                {
+                        cout << Dir[path-1].name[i] << ":" ;
+                        k = fcb[Dir[path-1].link[i]].startaddr;
+                        for(j=0;j<fcb[Dir[path-1].link[i]].length;j++)
+                        {
+                                cout << k << " ";
+                                k = FAT[k];
+                        }
+                        cout << endl;
+                }
+        }
+}
+
+void output_path()  /*输出工作路径*/
+{
+        cout<<endl<<"    C:\\";
+        for(int i = 0 ; i <= step ; i ++)
+        {
+                if(i == step)
+                        break;
+                else if(i == 0)
+                        cout<<steps[i];
+                else
+                        cout<<"\\"<<steps[i];
+        }
+
+}
+
+
+void dir()
+{
+        int             i;
+        int             dir=0,file=0;
+        int             sum=0;
+        show_bit_map();
+        output_path();
+        cout << "的目录" << endl << endl;
+
+        for(i = 0 ; i < Dir[path-1].num ; i ++)
+            if(!Dir[path-1].judge[i])
+            {
+                    cout<<Dir[Dir[path-1].link[i]-1].year<<"-"<<Dir[Dir[path-1].link[i]-1].month<<"-"<<Dir[Dir[path-1].link[i]-1].day<<"\t"<<Dir[Dir[path-1].link[i]-1].hour<<":"<<Dir[Dir[path-1].link[i]-1].minute<<":"<<Dir[Dir[path-1].link[i]-1].second<<"\t";
+                    cout<<"\t<DIR>\t";
+                    cout<<Dir[path-1].name[i]/*<<"\t"<<Dir[Dir[path-1].link[i]-1].node*/<<endl;
+                    dir ++;
+            }
+            else
+            {
+                    cout<<fcb[Dir[path-1].link[i]].year<<"-"<<fcb[Dir[path-1].link[i]].month<<"-"<<fcb[Dir[path-1].link[i]].day<<"\t"<<fcb[Dir[path-1].link[i]].hour<<":"<<fcb[Dir[path-1].link[i]].minute<<":"<<fcb[Dir[path-1].link[i]].second<<"\t\t";
+                    cout<<fcb[Dir[path-1].link[i]].length<<"\t";
+                    cout<<Dir[path-1].name[i]/*<<"\t"<<fcb[Dir[path-1].link[i]].node*/<<endl;
+                    sum += fcb[Dir[path-1].link[i]].length;
+                    file ++;
+            }
+     //   cout << "\t\t" << file << "个文件\t" << sum << "\t字节" << endl;
+      //  cout << "\t\t"<< dir << "个目录\t" << Memory << "\t可用字节" << endl;
+		//cout<<"FAT表内容如下："<<endl;
+        fat();
+}
+
+
+void _dir(char *choose)
+{
+     int            i,j,k;
+     for(i = 0 ; i < Dir[path-1].num ; i ++)
+     {
+                for(j=k=0;j<=strlen(Dir[path-1].name[i]);j++)
+                {
+                        if(choose[k]== '*')
+                                k++;
+                        if(choose[k] != '*' && choose[k] != '?' && choose[k] == Dir[path-1].name[i][j])
+                            k++;
+                        else    if(choose[k] == '?')
+                            k++;
+
+                }
+                if(k>=strlen(choose))
+                {
+                        if(!Dir[path-1].judge[i])
+                        {
+                                cout<<Dir[Dir[path-1].link[i]-1].year<<"-"<<Dir[Dir[path-1].link[i]-1].month<<"-"<<Dir[Dir[path-1].link[i]-1].day<<"\t"<<Dir[Dir[path-1].link[i]-1].hour<<":"<<Dir[Dir[path-1].link[i]-1].minute<<":"<<Dir[Dir[path-1].link[i]-1].second<<"\t";
+                                cout<<"\t\t<DIR>\t";
+                                cout<<Dir[path-1].name[i]<<endl;
+                        }
+                        else
+                        {
+                                cout<<fcb[Dir[path-1].link[i]].year<<"-"<<fcb[Dir[path-1].link[i]].month<<"-"<<fcb[Dir[path-1].link[i]].day<<"\t"<<fcb[Dir[path-1].link[i]].hour<<":"<<fcb[Dir[path-1].link[i]].minute<<":"<<fcb[Dir[path-1].link[i]].second<<"\t";
+                                cout<<fcb[Dir[path-1].link[i]].length<<"\t";
+                                cout<<Dir[path-1].name[i]<<endl;
+                }
+
+                }
+     }
+}
+
+bool output[100];
+
+void tree(int p,int deep)
+{
+        int             i,j;
+        for(i = 2 ; i < Dir[p-1].num ; i ++)
+        {
+
+                for(j = 0 ; j < deep ; j ++)
+                        if(output[j] == true)
+                                cout<<"│\t";
+                        else
+                                cout<<"\t";
+                if(i < Dir[p-1].num-1)
+                        cout<<"├───"<<Dir[p-1].name[i]<<endl;
+                else
+                        cout<<"└───"<<Dir[p-1].name[i]<<endl;
+
+                output[deep] = false;
+                if(i < Dir[p-1].num-1)
+                    output[deep] = true;
+
+                if(!Dir[p-1].judge[i])
+                        tree(Dir[p-1].link[i],deep+1);
+        }
+}
+
+void cd()
+{
+        char op[100];
+        int i;
+        cin>>op;
+        if(!strcmp(op,"\\"))
+        {
+            path=1;
+            step=0;
+            return ;
+        }
+        for(i = 0 ; i < Dir[path-1].num ; i ++)
+                if(!Dir[path-1].judge[i] && !strcmp(Dir[path-1].name[i],op))
+                {
+                        path=Dir[path-1].link[i];
+
+                        if(i == 1 && step)
+                                step--;
+                        else if(i != 1 && i)
+                        {
+                                strcpy(steps[step++],op);
+                        }
+
+                        return ;
+                }
+        cout<<"不存在该文件夹"<<endl;
+}
+
 
