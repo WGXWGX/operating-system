@@ -1,0 +1,151 @@
+#include<iostream>
+#include<time.h>
+#include<string.h>
+#include<math.h>
+#include<stdlib.h>
+#include<stdio.h>
+using namespace std;
+
+struct FCB
+{
+        char    name[100];
+        int     year,month,day,hour,minute,second;
+        int     length;
+        int     startaddr;
+        int     node;
+
+}fcb[1000];
+
+struct Directory
+{
+        char    name[100][100];
+        int     year,month,day,hour,minute,second;
+        int     judge[100];         /*0为文件夹,1为文件*/
+        int     link[100];
+        int     node;
+        int     num;
+}Dir[1000];
+
+int     path = 1,Time = 1,used_fcb = 0,used_dir = 1;
+
+int     step = 0;
+char    steps[100][100];        /*step保存当前工作路径深度,steps保存当前工作路径*/
+
+int     FAT[256];   /*  FAT表    */
+
+int     Memory = 0;
+
+char    bitmap[32]; /*  位示图 */
+
+time_t T; /*用来存系统时间*/
+struct tm *TimeP; /*用来存localtime传回的地址*/
+
+void init(int n,int root)       /*对新结点初始化*/
+{
+        strcpy(Dir[n].name[0],".");
+        strcpy(Dir[n].name[1],"..");
+        Dir[n].judge[0]=Dir[n].judge[1] = 0;
+        Dir[n].link[0]  = Time;
+        Dir[n].link[1]  = root;
+        Dir[n].node     = Time ++;
+        Dir[n].num      = 2;
+
+
+        T = time(NULL);
+        TimeP = localtime( &T );
+        Dir[n].year   = (TimeP->tm_year) +1900;
+        Dir[n].month  = (TimeP->tm_mon) + 1;
+        Dir[n].day    = (TimeP->tm_mday);
+        Dir[n].hour   = (TimeP->tm_hour);
+        Dir[n].minute = (TimeP->tm_min);
+        Dir[n].second = (TimeP->tm_sec);
+}
+bool get_bit_map(int n);
+void init_bit_map() /*初始化位示图*/
+{
+        int             i;
+        for(i = 0 ; i < 32 ; i ++)
+                bitmap[i] = rand()%256;
+        for(i = 0 ; i < 256 ; i ++)
+                FAT[i] = -1;
+        for(i = 0 ; i < 256 ; i++)
+                if(get_bit_map(i) == 0)
+                        Memory ++;
+
+
+}
+
+void show_bit_map() /*显示位示图*/
+{
+        int  i,j;
+        cout << "位示图" <<endl;
+        for(i = 0 ; i < 16 ; i ++)
+        {
+                for(j = 0 ; j < 16 ; j ++)
+                        printf("%d ",bool(bitmap[(i*16+j)/8] & (1<<(7-(i*16+j)%8))));
+                cout<<endl;
+        }
+
+}
+
+
+bool get_bit_map(int n)
+{
+        return bool(bitmap[n/8] & (1<<(7-n%8)));
+}
+
+void set_bit_map(int n,int k)
+{
+        if(k)
+                bitmap[n/8]=bitmap[n/8] | (1<<(7-n%8));
+        else
+                bitmap[n/8]=bitmap[n/8] & ~(1<<(7-n%8));
+}
+
+void md()       /*创建文件夹*/
+{
+        int  i;
+        char  op[100];
+        cin>>op;
+        for(i = 2 ;i < Dir[path-1].num ; i ++)
+                if(!Dir[path-1].judge[i] && !strcmp(Dir[path-1].name[i],op))
+                {
+                        cout<<"文件夹已经存在"<<endl;
+                        return ;
+                }
+
+        init(used_dir++,path);
+
+        Dir[path-1].judge[Dir[path-1].num] = 0;
+        Dir[path-1].link[Dir[path-1].num]  = used_dir;
+        strcpy(Dir[path-1].name[Dir[path-1].num],op);
+        Dir[path-1].num++;
+
+}
+
+void rd()       /*  删除文件夹   */
+{
+        int             i,j;
+        char op[100];
+        cin>>op;
+        for(i = 2 ; i < Dir[path-1].num ; i ++)
+                if(!Dir[path-1].judge[i] && !strcmp(Dir[path-1].name[i],op))
+                {
+                        if(Dir[Dir[path-1].link[i]-1].num  >2)
+                                cout<<"该文件夹不为空, 不能删除"<<endl;
+                        else
+                        {
+                                for(j = i ; j < Dir[path-1].num-1 ; j ++)
+                                {
+                                        Dir[path-1].link[j]  = Dir[path-1].link[j+1];
+                                        Dir[path-1].judge[j] = Dir[path-1].judge[j+1];
+                                        strcpy(Dir[path-1].name[j],Dir[path-1].name[j+1]);
+                                }
+                                Dir[path-1].num--;
+                                cout<<"删除成功"<<endl;
+                        }
+                        return ;
+                }
+        cout<<"该文件夹不存在"<<endl;
+}
+
