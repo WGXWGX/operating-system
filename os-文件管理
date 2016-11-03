@@ -362,3 +362,18 @@ void mk()
 }
 
 
+int main()
+{
+        init(0,1);
+		cout<<"********************欢迎进入模拟文件管理系统********************"<<endl;
+		cout<<"			md  :创建子目录"<<endl;
+		cout<<"			cd  :切换工作目录"<<endl;
+		cout<<"			rd  :删除子目录"<<endl;
+		cout<<"			mk  :创建空文件"<<endl;
+		cout<<"			rk  :删除文件"<<endl;
+		cout<<"			tree:树形结构显示"<<endl;
+		cout<<"			dir :显示\n\n"<<endl;
+        init_bit_map();
+        choose();
+        return 0;
+}
