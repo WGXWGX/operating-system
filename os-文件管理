@@ -305,3 +305,60 @@ void cd()
 }
 
 
+void mk()
+{
+        int i,j,k;
+        cin>>fcb[used_fcb].name;
+        cin>>fcb[used_fcb].length;
+
+        Memory -= fcb[used_fcb].length;
+
+        for(i = 2 ; i < Dir[path-1].num ; i ++)
+                if(Dir[path-1].judge[i] && !strcmp(Dir[path-1].name[i],fcb[used_fcb].name))
+                {
+                        cout<<"文件重名，创建失败"<<endl;
+                        return ;
+                }
+
+        for(i = j = 0 ; i < 256 && j < fcb[used_fcb].length ; i ++)
+            if(!get_bit_map(i))
+                j ++;
+        if(i == 256)
+        {
+            cout<<"没有足够空间,不能创建文件"<<endl;
+            return ;
+        }
+
+        for(i = j = 0 , k = -1 ; i < fcb[used_fcb].length ; i ++ , j ++)
+        {
+            while(get_bit_map(j))
+                j ++;
+            set_bit_map(j,1);
+            if(k == -1)
+                fcb[used_fcb].startaddr = j;
+            else
+                FAT[k] = j;
+            k = j;
+        }
+
+        strcpy(Dir[path-1].name[Dir[path-1].num],fcb[used_fcb].name);
+        fcb[used_fcb].node = Time++;
+        Dir[path-1].link[Dir[path-1].num]  = used_fcb;
+        Dir[path-1].judge[Dir[path-1].num] = 1;
+
+
+        T = time(NULL);
+        TimeP = localtime( &T );
+        fcb[used_fcb].year = (TimeP->tm_year) + 1900;
+        fcb[used_fcb].month  = (TimeP->tm_mon) + 1;
+        fcb[used_fcb].day  = (TimeP->tm_mday) ;
+        fcb[used_fcb].hour   = (TimeP->tm_hour);
+        fcb[used_fcb].minute = (TimeP->tm_min);
+        fcb[used_fcb].second = (TimeP->tm_sec);
+
+        Dir[path-1].num++;
+        used_fcb++;
+
+}
+
+
