@@ -35,6 +35,70 @@ PCB *del(PCB *head)
 }
 
 
+void FCFS(int *Ari_time,int *Ser_time,int num)
+{
+   // cout<<Ari_time[0]<<"asdsad"<<endl;
+    //cout<<Ser_time[0]<<"asdsad"<<endl;
+    int i=0,j=0;
+    int *Fin_time = new int[num];
+    int *T =new int[num];
+    double *W = new double[num];
+    double Aver_t=0;
+    double Aver_w=0;
+    int last_fin_t=0;
+
+
+    for(i=0;i<num;i++)
+    {
+        //如果到达时间大于当前最终完成时间
+        if(Ari_time[i]>last_fin_t)
+        {
+            Fin_time[i]=Ari_time[i]+Ser_time[i];
+        }
+        else
+        {
+            Fin_time[i]=last_fin_t+Ser_time[i];
+        }
+        last_fin_t=Fin_time[i];
+       // cout<<last_fin_t<<"eesed"<<endl;
+        T[i]=Fin_time[i]-Ari_time[i];//周转时间
+        W[i]=T[i]/(double)Ser_time[i];//带权周转时间  周转时间/服务时间
+    }
+
+    cout<<"完成时刻 ";
+    for(i=0;i<num;i++)
+    {
+        cout<<Fin_time[i]<<" ";
+    }
+    cout<<endl;
+
+    cout<<"周转     ";
+    int allWholeTime=0;
+    for(i=0;i<num;i++)
+    {
+        allWholeTime+=T[i];
+        cout<<T[i]<<" ";
+    }
+
+    cout<<endl;
+    Aver_t=allWholeTime/(double)num;
+    cout<<"平均周转 ";
+    cout<<Aver_t<<endl;
+
+    cout<<"带权周转 ";
+    double allWeightWholeTime=0;
+    for(i=0;i<num;i++)
+    {
+        allWeightWholeTime+=W[i];
+        cout<<W[i]<<" ";
+    }
+    cout<<endl;
+    Aver_w = allWeightWholeTime/num;
+    cout<<"平均带权周转 ";
+    cout<<Aver_w<<endl;
+    cout<<endl;
+}
+
 
 
 
