@@ -1,0 +1,91 @@
+#include <iostream>
+using namespace std;
+
+//定义进程
+typedef struct pcb{
+   // char id;
+	int arrive,start,server,finish,time_run;
+	//到达时间 服务时间
+	int times;
+    struct pcb *next;
+}PCB;
+PCB *ready,*running,*blocked,finished;
+int sum_time=0;
+int num_time=0;
+int daiquan_time=0;
+void Insert(PCB *head,PCB *process)
+{
+    PCB *p=head;
+    while(p->next!=NULL)
+    {
+        p=p->next;
+    }
+    p->next=process;
+    process->next=NULL;
+}
+PCB *del(PCB *head)
+{
+    PCB *p=head->next;
+ //   while(p)
+   // {
+        head->next=p->next;
+        p->next=NULL;
+    //}
+    return p;
+}
+
+
+
+
+
+int main()
+{
+
+	ready=new PCB;
+    ready->next=NULL;
+    blocked=new PCB;
+    blocked->next=NULL;
+    int num,i=0,j=0,k=0;
+	cout<<"*********************进程调度***********************\n"<<endl;
+    cout<<"请输入进程的个数 "<<endl;
+
+    cin>>num;
+    int *Ari_time=new int[num];
+    int *Ser_time=new int[num];
+    cout<<"请输入到达时间："<<endl;
+    for(i=0;i<num;i++)
+    {
+        cin>>Ari_time[i];
+
+    }
+    cout<<"请输入服务时间："<<endl;
+    for(j=0;j<num;j++)
+    {
+        cin>>Ser_time[j];
+
+    }
+   // cout<<Ser_time[0]<<endl;
+	for(k=0;k<num;k++)//这里相当于创建进程
+    {
+		PCB *p=new PCB;
+		p->arrive=Ari_time[k];
+		p->server=Ser_time[k];
+		p->time_run=p->server;
+		p->next=NULL;
+	//	p=p->next;
+		 Insert(ready,p);
+    }
+
+
+
+
+    cout<<"*********FCFS 算法***********\n";
+    FCFS(Ari_time,Ser_time,num);
+    cout<<endl;
+
+    cout<<"*********SJF 算法************";
+    SJF(Ari_time,Ser_time,num);
+
+    cout<<"********时间片轮转算法********"<<endl;
+    Times(num);
+}
