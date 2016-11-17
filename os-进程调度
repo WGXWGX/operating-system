@@ -1,6 +1,5 @@
 #include <iostream>
 using namespace std;
-
 //定义进程
 typedef struct pcb{
    // char id;
@@ -33,8 +32,6 @@ PCB *del(PCB *head)
     //}
     return p;
 }
-
-
 void FCFS(int *Ari_time,int *Ser_time,int num)
 {
    // cout<<Ari_time[0]<<"asdsad"<<endl;
@@ -98,8 +95,6 @@ void FCFS(int *Ari_time,int *Ser_time,int num)
     cout<<Aver_w<<endl;
     cout<<endl;
 }
-
-
 void SJF(int *Ari_time,int *Ser_time,int num)
 {
     int i=0,j=0;
@@ -213,8 +208,6 @@ void SJF(int *Ari_time,int *Ser_time,int num)
     cout<<endl;
 
 }
-
-
 void Times(int num)
 {
     //create(num);
@@ -223,7 +216,6 @@ void Times(int num)
 	int i=0;
 	cout<<"请输入时间片：";
 	cin>>t;
-
 //	cout<<"out!"<<endl;
 	p=ready->next;
 	copy_p=ready->next;
@@ -364,17 +356,11 @@ int main()
 	//	p=p->next;
 		 Insert(ready,p);
     }
-
-
-
-
     cout<<"*********FCFS 算法***********\n";
     FCFS(Ari_time,Ser_time,num);
     cout<<endl;
-
     cout<<"*********SJF 算法************";
     SJF(Ari_time,Ser_time,num);
-
     cout<<"********时间片轮转算法********"<<endl;
     Times(num);
 }
