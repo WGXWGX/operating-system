@@ -215,6 +215,118 @@ void SJF(int *Ari_time,int *Ser_time,int num)
 }
 
 
+void Times(int num)
+{
+    //create(num);
+	PCB *p,*temp,*copy_p,*head;
+	int t,last_fin_t=0;
+	int i=0;
+	cout<<"请输入时间片：";
+	cin>>t;
+
+//	cout<<"out!"<<endl;
+	p=ready->next;
+	copy_p=ready->next;
+	while(copy_p)
+	{
+		//cout<<p->run<<endl;
+		if(p->server==0)       //进程运行结束，插入阻塞队列
+		{
+			copy_p=copy_p->next;
+			temp=del(ready);
+			Insert(blocked,temp);
+		}
+		else if(p->server>t)           //进程运行时间大于时间片，将时间片进行处理，然后插到就绪队列尾
+		{
+			p->server=p->server-t;
+			last_fin_t+=t;
+			copy_p=copy_p->next;
+			temp=del(ready);
+			Insert(ready,temp);
+		//	cout<<p->server<<endl;
+		}
+		else if(p->server<t&&p->server!=0)//进程小于时间片，则将其运行时间置零，并记住结束时间
+		{
+			p->finish=last_fin_t+p->server;
+			last_fin_t=p->finish;
+			p->server=0;
+			copy_p=copy_p->next;
+			temp=del(ready);
+			Insert(ready,temp);
+		}
+		else       //进程运行时间等于时间片
+		{
+			p->server=0;
+			p->finish=last_fin_t+t;
+			last_fin_t=p->finish;
+			copy_p=copy_p->next;
+			temp=del(ready);
+			Insert(ready,temp);
+		//	del(p,blocked);
+
+		}
+		p=copy_p; //copy_p是为了记住p的位置，因为前面有删除结点，防止找不着，所以用pp
+		head=ready->next;
+		while(p==NULL)   //此循环是为了避免出现队列里只剩一个进程的情况
+		{
+			if(head==NULL)
+				break;
+			else
+			{
+				last_fin_t=last_fin_t+head->server-1;
+				//cout<<"last_fin_t";
+				head->finish=last_fin_t;
+				temp=del(ready);
+				Insert(blocked,temp);
+				break;
+			}
+
+		}
+	}
+	//输出到达时间
+    p=blocked->next;
+	cout<<"到达时刻 ";
+    while(p!=NULL)
+    {
+		cout<<p->arrive;
+		 cout<<"   ";
+         p=p->next;
+    }
+	 cout<<endl;
+	//输出完成时间
+	p=blocked->next;
+	cout<<"完成时刻 ";
+    while(p!=NULL)
+    {
+
+         cout<<p->finish;
+		 cout<<"   ";
+         p=p->next;
+    }
+	cout<<endl;
+    while(p!=NULL)
+    {
+        cout<<p->finish - p->arrive;
+        cout<<"    ";
+        p=p->next;
+    }
+
+	PCB *rr;
+	rr=blocked->next;
+	if(rr!=NULL)     //计算平均周转时间
+	{
+		//cout<<"11111"<<endl;
+		sum_time+=rr->finish - rr->arrive;
+		num_time+=1;
+		daiquan_time+=(rr->finish - rr->arrive)/(rr->time_run);//计算带权周转时间
+		rr=rr->next;
+	}
+	float b,c;
+	b=(sum_time/num_time)*1.0;
+	cout<<"平均周转时间为："<<b<<endl;
+	c=(daiquan_time/num_time)*1.0;
+	cout<<"平均带权周转为："<<c<<endl;
+}
 int main()
 {
 
