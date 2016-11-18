@@ -77,4 +77,41 @@ void Bank()                  /*银行家算法*/
               {
                   cout<<"您输入的请求数超过系统有的资源数!请重新输入!"<<endl;
 
+    continue;
+              }
+          }
+          for(i=0;i<n;i++)
+          {
+              AVAILABLE[i]-=REQUEST[cusneed][i];
+              ALLOCATION[cusneed][i]+=REQUEST[cusneed][i];
+              NEED[cusneed][i]-=REQUEST[cusneed][i];
+          }
+          if(Safe())
+          {
+              cout<<"同意分配请求!"<<endl;
+          }
+          else
+          {
+              cout<<"您的请求被拒绝!"<<endl;
+              for(i=0;i<n;i++)
+              {
+                  AVAILABLE[i]+=REQUEST[cusneed][i];
+                  ALLOCATION[cusneed][i]-=REQUEST[cusneed][i];
+                  NEED[cusneed][i]+=REQUEST[cusneed][i];
+              }
+          }
+          for(i=0;i<m;i++)
+          {
+              FINISH[i]=false;
+          }
+          cout<<"您还想再次请求分配吗?是请按y/Y,否请按其它键"<<endl;
+          cin>>again;
+          if(again=='y'||again=='Y')
+          {
+              continue;
+          }
+          break;
+          }
+}
+
 
