@@ -113,5 +113,62 @@ void Bank()                  /*银行家算法*/
           break;
           }
 }
-
+bool Safe()                                      /*安全性算法*/
+{
+      int i,j,k,l=0;
+      int Work[MAXRESOURCE];                      /*工作数组*/
+      for(i=0;i<n;i++)
+      Work[i]=AVAILABLE[i];
+      for(i=0;i<m;i++)
+      {
+          FINISH[i]=false;
+      }
+      for(i=0;i<m;i++)
+      {    
+          if(FINISH[i]==true)
+          {
+              continue;
+          }
+          else
+          {
+              for(j=0;j<n;j++)
+              {
+                  if(NEED[i][j]>Work[j])
+                  {
+                      break;
+                  }
+              }
+              if(j==n)
+              { 
+                  FINISH[i]=true;
+                  for(k=0;k<n;k++)
+                  {
+                      Work[k]+=ALLOCATION[i][k];
+                  }
+                  p[l++]=i;
+                  i=-1;
+              }
+              else
+              {                  continue; 
+              }
+          }
+          if(l==m)
+          {
+              cout<<"系统是安全的"<<endl;
+              cout<<"安全序列:"<<endl;
+              for(i=0;i<l;i++)
+              {
+                  cout<<p[i];
+                  if(i!=l-1)
+                  {
+                      cout<<"-->";
+                  }
+              }
+              cout<<""<<endl;
+              return true;
+          }
+      }
+      cout<<"系统是不安全的"<<endl;
+      return false;
+}
 
