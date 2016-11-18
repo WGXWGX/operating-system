@@ -53,4 +53,28 @@ void Init()                  /*初始化算法*/
           cin>>AVAILABLE[i];
       }
 }
+void Bank()                  /*银行家算法*/
+{
+      int i,cusneed;
+      char again;
+      while(1)
+      {
+          cout<<"请输入要申请资源的进程号(注:第1个进程号为0,依次类推)"<<endl;
+          cin>>cusneed;
+          cout<<"请输入进程所请求的各资源的数量"<<endl;
+          for(i=0;i<n;i++)
+          {
+              cin>>REQUEST[cusneed][i];
+          }
+          for(i=0;i<n;i++)
+          {
+              if(REQUEST[cusneed][i]>NEED[cusneed][i])
+              {
+                  cout<<"您输入的请求数超过进程的需求量!请重新输入!"<<endl;
+                  continue;
+              }
+              if(REQUEST[cusneed][i]>AVAILABLE[i])
+              {
+                  cout<<"您输入的请求数超过系统有的资源数!请重新输入!"<<endl;
+
 
